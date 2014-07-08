@@ -1,0 +1,12 @@
+---
+
+dependencies:
+  - role: ansible-webserver
+    webserver_sites:
+      pxe:
+        - listen 192.168.122.1:80
+        - server_name _ 
+        - "location /centos/ { root /data/mirror; error_page 404 = /fetch$uri; error_page 403 = /fetch$uri; }"
+        - "location /fetch/centos/ { internal; proxy_pass {{pxe_centos_repository}}; proxy_store /data/mirror$request_uri; proxy_store_access  user:rw  group:rw  all:r; }"
+        - "location /ks/ { root /data; }"
+

@@ -1,0 +1,7 @@
+default linux
+prompt 0
+timeout 1
+label linux
+        kernel /vmlinuz
+        ipappend 2
+        append initrd=/initrd.img ksdevice=bootif lang=  kssendmac text  ks=http://192.168.122.1/ks/ks.cfg

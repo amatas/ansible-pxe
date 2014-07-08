@@ -1,0 +1,59 @@
+---
+
+- name: Install PXE packages
+  yum: name={{item}} state=present
+  with_items: pxe_packages
+  tags:
+    - install
+    - pxe
+
+- name: Make directories tftp
+  file: path={{item}} state=directory
+  with_items:
+    - "/tftpboot/pxelinux.cfg"
+  tags:
+    - configure
+    - pxe
+
+- name: Make directories repository
+  file: path={{item}} state=directory mode=0775 owner=www-data group=www-data
+  with_items:
+    - "/data/mirror/centos"
+    - "/data/ks"
+  tags:
+    - configure
+    - pxe
+
+- name: Download boot kernel
+  get_url: url={{pxe_centos_repository}}{{pxe_centos_version}}/os/x86_64/images/pxeboot/{{item}} dest=/tftpboot/{{item}} mode=0644
+  with_items:
+   - initrd.img
+   - vmlinuz
+  tags:
+    - configure
+    - pxe
+
+- name: Create boot VM entries
+  template: src=default.j2 dest=/tftpboot/pxelinux.cfg/{{item}}
+  with_items: pxe_hosts
+  tags:
+    - configure
+    - pxe
+
+- name: Setup tftp service
+  template: src=tftp.j2 dest=/etc/xinetd.d/tftp
+  tags:
+    - configure
+    - pxe
+
+- name: Enable and start tftp service
+  service: name=xinetd state=started enabled=yes
+  tags:
+    - configure
+    - pxe
+
+- name: Save kickstart file
+  template: src=ks.cfg.j2 dest=/data/ks/ks.cfg
+  tags:
+    - configure
+    - pxe

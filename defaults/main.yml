@@ -1,0 +1,14 @@
+---
+
+pxe_centos_repository: http://mirror.ovh.net/ftp.centos.org/centos/
+
+pxe_centos_version: 6.5
+
+pxe_hosts:
+  - default
+
+pxe_packages:
+  - syslinux-tftpboot
+  - tftp-server
+
+pxe_ssh_keys: []
